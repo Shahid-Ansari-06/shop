@@ -1,0 +1,25 @@
+[
+    {
+        "id": 1,
+        "title": "Wireless Bluetooth Headphones",
+        "description": "Detailed product description goes here.",
+        "price": 99.99,
+        "originalPrice": 129.99,
+        "discount": "25% off",
+        "image": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8aGVhZHBob25lc3xlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60",
+        "additionalImages": [
+            "https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8c21hcnQlMjB3YXRjaHxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60"
+        ],
+        "rating": 4.5,
+        "reviews": 125,
+        "inStock": true,
+        "sku": "SP001",
+        "brand": "Boat",
+        "badge": "Popular",
+        "category": "electronics",
+        "featured": true,
+        "trending": false,
+        "deal": false,
+        "link": "https://example.com/product/1"
+    }
+]
