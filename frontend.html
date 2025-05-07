@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Display</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .product-card {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            overflow: hidden;
+            background: white;
+            transition: transform 0.2s;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .product-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .product-info {
+            padding: 15px;
+        }
+        
+        .product-title {
+            font-size: 1.2rem;
+            margin: 0 0 10px;
+            color: #333;
+        }
+        
+        .product-price {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #2e7d32;
+            margin: 10px 0;
+        }
+        
+        .original-price {
+            text-decoration: line-through;
+            color: #999;
+            font-size: 1rem;
+            margin-left: 8px;
+        }
+        
+        .product-badge {
+            display: inline-block;
+            background-color: #ff5722;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+        }
+        
+        .product-rating {
+            color: #ffc107;
+            margin: 10px 0;
+        }
+        
+        .additional-images {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .additional-images img {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .product-meta {
+            color: #666;
+            font-size: 0.85rem;
+            margin: 5px 0;
+        }
+        
+        .no-products {
+            text-align: center;
+            color: #666;
+            padding: 40px;
+            grid-column: 1 / -1;
+        }
+        
+        .admin-link {
+            display: block;
+            text-align: center;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Our Products</h1>
+        <a href="admin.html" class="admin-link">Add New Product (Admin)</a>
+        <div class="products-grid" id="productsContainer">
+            <!-- Products will be rendered here -->
+            <div class="no-products">No products available. Add some products from the admin panel.</div>
+        </div>
+    </div>
+
+    <script>
+        // Function to render all products
+        function renderProducts() {
+            const productsContainer = document.getElementById('productsContainer');
+            const products = JSON.parse(localStorage.getItem('products')) || [];
+            
+            if (products.length === 0) {
+                productsContainer.innerHTML = '<div class="no-products">No products available. Add some products from the admin panel.</div>';
+                return;
+            }
+            
+            productsContainer.innerHTML = '';
+            
+            products.forEach((product, index) => {
+                // Create rating stars
+                const fullStars = Math.floor(product.rating || 0);
+                const hasHalfStar = (product.rating || 0) % 1 >= 0.5;
+                let starsHtml = '';
+                
+                for (let i = 0; i < 5; i++) {
+                    if (i < fullStars) {
+                        starsHtml += '★';
+                    } else if (i === fullStars && hasHalfStar) {
+                        starsHtml += '½';
+                    } else {
+                        starsHtml += '☆';
+                    }
+                }
+                
+                // Create additional images
+                let additionalImagesHtml = '';
+                if (product.additionalImages && product.additionalImages.length > 0) {
+                    additionalImagesHtml = `
+                        <div class="additional-images">
+                            ${product.additionalImages.map(img => 
+                                `<img src="${img}" alt="Additional product image" onerror="this.style.display='none'">`
+                            ).join('')}
+                        </div>
+                    `;
+                }
+                
+                // Create the product card HTML
+                const productCard = document.createElement('div');
+                productCard.className = 'product-card';
+                productCard.innerHTML = `
+                    ${product.badge ? `<span class="product-badge">${product.badge}</span>` : ''}
+                    <img class="product-image" src="${product.image}" alt="${product.title}" 
+                         onerror="this.src='https://via.placeholder.com/400x300?text=Image+Not+Available'">
+                    <div class="product-info">
+                        <h2 class="product-title">${product.title}</h2>
+                        <p>${product.description}</p>
+                        
+                        <div class="product-price">
+                            $${product.price.toFixed(2)}
+                            ${product.originalPrice ? `<span class="original-price">$${product.originalPrice.toFixed(2)}</span>` : ''}
+                            ${product.discount ? `<span>${product.discount}</span>` : ''}
+                        </div>
+                        
+                        ${product.rating ? `
+                        <div class="product-rating" title="${product.rating} out of 5 stars">
+                            ${starsHtml} ${product.reviews ? `(${product.reviews} reviews)` : ''}
+                        </div>
+                        ` : ''}
+                        
+                        ${additionalImagesHtml}
+                        
+                        <div class="product-meta">
+                            ${product.brand ? `<div><strong>Brand:</strong> ${product.brand}</div>` : ''}
+                            ${product.sku ? `<div><strong>SKU:</strong> ${product.sku}</div>` : ''}
+                            <div><strong>Availability:</strong> ${product.inStock ? 'In Stock' : 'Out of Stock'}</div>
+                            ${product.category ? `<div><strong>Category:</strong> ${product.category}</div>` : ''}
+                        </div>
+                    </div>
+                `;
+                
+                productsContainer.appendChild(productCard);
+            });
+        }
+        
+        // Initial render
+        renderProducts();
+        
+        // Update products when localStorage changes
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'products') {
+                renderProducts();
+            }
+        });
+    </script>
+</body>
+</html>
